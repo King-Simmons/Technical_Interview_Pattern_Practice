@@ -1,0 +1,1 @@
+rootProject.name = "Technical_Interview_Pattern_Practice"
