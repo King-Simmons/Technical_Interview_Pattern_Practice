@@ -17,6 +17,7 @@ public class LevelOnePatterns {
                 - BFS-MultiSource + levels\s
                 - DFS\s
                 - Backtracking\s
+                - Topological Sort\s
                 - Two Pointers Opposite + Same\s
                 - Prefix Sum\s
                 - Sliding Window\s
@@ -124,7 +125,24 @@ public class LevelOnePatterns {
         }
     }
 
-    //two pointers
+    //topoSort
+    List<Integer> topoSort(int n, List<int[]> edges) {
+        List<List<Integer>> graph = new ArrayList<>();
+        int[] indeg = new int[n];
+        for (int i = 0; i < n; i++) graph.add(new ArrayList<>());
+        for (int[] e : edges) { graph.get(e[0]).add(e[1]); indeg[e[1]]++; }
+        Deque<Integer> q = new ArrayDeque<>();
+        for (int i = 0; i < n; i++) if (indeg[i] == 0) q.add(i);
+        List<Integer> res = new ArrayList<>();
+        while (!q.isEmpty()) {
+            int cur = q.poll();
+            res.add(cur);
+            for (int nei : graph.get(cur)) if (--indeg[nei] == 0) q.add(nei);
+        }
+        return res;
+    }
+
+    //two pointers same + opposite
     private static void twoPointersBoth(int[] arr){
         int l = 0, r = arr.length -1;
         while(l < r){
@@ -159,21 +177,82 @@ public class LevelOnePatterns {
         return true;
     }
 
-    //sliding window
-    private static void slidingWindow(String s, int k){
+
+    /*
+    private static W slidingWindowFixed(List<T> input, int windowSize) {
+    W ans = window = input.subList(0, windowSize);
+    for (int right = windowSize; right < input.size(); ++right) {
+        int left = right - windowSize;
+        remove input.get(left) from window
+        append input.get(right) to window
+        ans = optimal(ans, window);
+    }
+    return ans;
+
+    */
+
+    //sliding window fixed, longest, shortest
+    private static List<Integer> slidingWindow(List<Integer> input, int windowSize, int target){
+        List<Integer> ans = new ArrayList<>();
+        int sum = 0;
         int left = 0;
-        HashMap<Character, Integer> freq = new HashMap<>();
 
-        for(int right = 0; right < s.length(); right++){
-            char rightChar = s.charAt(right);
-            freq.put(rightChar, freq.getOrDefault(rightChar, 0) + 1);
-
-            while(freq.size() > k){
-                char leftChar = s.charAt(left);
-                freq.put(leftChar, freq.get(left) - 1);
-                if(freq.get(leftChar) == 0) freq.remove(leftChar);
+        //fixed
+        List<Integer> window = input.subList(0, windowSize);
+        for(int i : window){
+            sum += i;
+        }
+        for(int right = windowSize; right < input.size(); right++){
+            left = right - windowSize;
+            window.add(input.get(right));
+            sum += input.get(right);
+            window.remove(0);
+            sum -= input.get(left);
+            if(sum == target){
+                return window;
             }
         }
+
+        //longest
+        window = new ArrayList<>();
+        int maxSize = 0;
+        sum = 0;
+        left = 0;
+        for(int right = 0; right < input.size(); right++){
+            window.add(input.get(right));
+            sum += input.get(right);
+            while(sum > target){
+                window.remove(0);
+                sum-=input.get(left);
+                left++;
+            }
+            if(window.size() > maxSize){
+                maxSize = window.size();
+                ans = window;
+            }
+        }
+
+        //shortest
+        window = new ArrayList<>();
+        sum = 0;
+        left = 0;
+        int minSize = Integer.MAX_VALUE;
+
+        for(int right = 0; right < input.size(); right++){
+            window.add(input.get(right));
+            sum += input.get(right);
+            while(sum < target){
+                if(window.size() < minSize){
+                    minSize = window.size();
+                    ans = window;
+                }
+                window.remove(0);
+                sum -= input.get(left);
+                left++;
+            }
+        }
+
+        return ans;
     }
 
     //sorting with TieBreaker
