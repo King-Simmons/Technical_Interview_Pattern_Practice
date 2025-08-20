@@ -1,5 +1,6 @@
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.HashMap;
 import java.util.Arrays;
 import java.util.PriorityQueue;
@@ -16,7 +17,7 @@ public class LevelOnePatterns {
                 - BFS-MultiSource + levels\s
                 - DFS\s
                 - Backtracking\s
-                - Two Pointers\s
+                - Two Pointers Opposite + Same\s
                 - Prefix Sum\s
                 - Sliding Window\s
                 - Sorting with Tie Breaker\s
@@ -35,115 +36,126 @@ public class LevelOnePatterns {
     }
 
     //BFS directional
-    private static void bfs(int sr, int sc, int[][] grid, int target){
-        int[][] dirs = {{0,1}, {1,0}, {-1,0}, {0,-1}};
+   private static void bfs(int sr, int sc, int[][] grid, int target){
+        int[][] dirs = {{0,1}, {1,0}, {-1, 0}, {0, -1}};
         ArrayDeque<int[]> q = new ArrayDeque<>();
         int m = grid.length, n = grid[0].length;
         boolean[][] visited = new boolean[m][n];
 
-        q.add(new int[]{sr, sc}); //add to q
-        visited[sr][sc] = true; //add to visited
+        q.add(new int[]{sr, sc});
+        visited[sr][sc] = true;
 
-        while(!q.isEmpty()){ //loop through q
-            int[] curr = q.poll();//get from q
-            int r = curr[0], c = curr[1]; //get coords
-
-            for(int[] d : dirs){ //loop all through possible directions
-                int newR = r + d[0], newC = c + d[1]; //get curr directions
-                if(newR >= 0 && newC >= 0 && newR < m && newC < n && !visited[newR][newC] && grid[newR][newC] == target){ //if curr direction is possible
-                    q.add(new int[]{newR, newC}); //add to q
-                    visited[newR][newC] = true; //mark visited
+        while(!q.isEmpty()){
+            int[] curr = q.poll();
+            int r = curr[0], c = curr[1];
+            for(int[] d : dirs){
+                int nr = r + d[0], nc = c + d[1];
+                if(nr >= 0 && nc >= 0 && nr < m && nc < n && !visited[nr][nc] && grid[nr][nc] == target){
+                    q.add(new int[]{nr, nc});
+                    visited[nr][nc] = true;
                 }
             }
         }
-    }
+   }
 
     //BFS multiSoure directional + levels
-    private static void bfs(int[][] grid, int target, int start){
-        int[][] dirs = {{0,1}, {1, 0}, {-1,0}, {0, -1}};
+    private static int bfs(int sr, int sc, int target, int start, int[][] grid){
+        int[][] dirs = {{0,1}, {1,0}, {-1,0}, {0, -1}};
         int m = grid.length, n = grid[0].length;
         ArrayDeque<int[]> q = new ArrayDeque<>();
         boolean[][] visited = new boolean[m][n];
-        int level = 0;
+        int levels = 0;
 
         for(int r = 0; r < m; r++){
             for(int c = 0; c < n; c++){
                 if(grid[r][c] == start){
-                    q.add(new int[]{r,c}); //add to q
-                    visited[r][c] = true; //mark visited
+                    q.add(new int[]{r,c});
+                    visited[r][c] = true;
                 }
             }
         }
 
-        while(!q.isEmpty()){ //loop through q
-            int size = q.size(); //get q size
-            for(int i = 0; i < size; i++){ //loop through only objects on current level
-                int[] curr = q.poll(); //get from q
-                int r = curr[0], c =curr[1]; //get current coord
-                for(int[] d : dirs){ //loop through all possible directions
-                    int newR = r + d[0], newC = c + d[1]; //get current direction
-                    if(newR >= 0 && newC >= 0 && newR < m && newC < n && !visited[newR][newC] && grid[newR][newC] == target){ //is current direction possible?
-                        q.add(new int[]{newR, newC}); //add to q
-                        visited[newR][newC] = true; //mark visited
+        while(!q.isEmpty()){
+            int size = q.size();
+            for(int i = 0; i < size; i++){
+                int[] curr = q.poll();
+                int r = curr[0], c = curr[1];
+                for(int[] d : dirs){
+                    int nr = r + d[0], nc = c + d[1];
+                    if(nr >= 0 && nc >= 0 && nr < m && nc < n && !visited[nr][nc] && grid[nr][nc] == target){
+                        q.add(new int[] {nr, nc});
+                        visited[nr][nc] = true;
                     }
                 }
             }
-            level++; //increment level
+            levels++;
         }
+
+        return levels;
     }
 
     //dfs
-    private static void dfs(int r, int c, int m, int n, int[][] grid, boolean[][] visited, int target){
-        if(r < 0 || c < 0 || r >= m || c >= n || visited[r][c] || grid[r][c] != target) return; //base case (if no longer valid)
-        visited[r][c] = true;// mark visited
+    private static void dfs(int r, int c, int[][] grid, int target, boolean[][] visited){
+        if(r < 0 || c <0 || r >= grid.length || c >= grid[0].length || visited[r][c] || grid[r][c] != target){
+            return;
+        }
+        visited[r][c] = true;
+        int[][] dirs = {{0,1}, {1, 0}, {-1, 0}, {0, -1}};
 
-        int[][] dirs = {{1,0}, {0,1}, {-1, 0}, {0, -1}};
-        for(int[] d : dirs){ //loop through possible directions
-            dfs(r + d[0], c + d[1], m, n, grid, visited, target); // recusively call dfs
+        for(int[] d : dirs){
+            dfs(r+d[0], c+d[1], grid, target, visited);
         }
     }
 
 
     //backtracking
-    private static void backtrack(ArrayList<ArrayList<Integer>> res, ArrayList<Integer> curr, int[] nums, boolean[] used){
-        if(curr.size() == nums.length) {
+    private static void backtrack(List<List<Integer>> res, List<Integer> curr, int target, int[] possible, boolean[] used){
+        if(curr.size() == target){
             res.add(new ArrayList<>(curr));
+            return;
         }
-        for(int i = 0; i < nums.length; i++){
-            if(used[i]) continue;
+        for(int i = 0; i < possible.length; i++){
+            if(used[i] == true) continue;
             used[i] = true;
-            curr.add(nums[i]);
-            backtrack(res, curr, nums, used);
-            curr.remove(curr.size() - 1);
+            curr.add(possible[i]);
+            backtrack(res, curr, target, possible, used);
+            curr.remove(curr.size()-1 );
             used[i] = false;
         }
     }
 
     //two pointers
-    private static void twoPointers(int[] arr){
-        int left = 0, right = arr.length -1;
-        while(left < right){
-            if(arr[left] < arr[right]){
-                left++;
-            }else{
-                right--;
+    private static void twoPointersBoth(int[] arr){
+        int l = 0, r = arr.length -1;
+        while(l < r){
+            //process
+            if(arr[l] == arr[r]){ //condition
+                l++;
+            }else r--;
+        }
+        int slow = 0, fast = 0;
+        while(fast < arr.length){
+            //process
+            if(arr[slow] != arr[fast]){ //condition
+                slow++;
+                arr[slow] = arr[fast];
             }
+            fast++;
         }
     }
 
 
-    //pre-fix sum
-    private static boolean prefixSum(int maxIndex, int[][] trips, int capacity){
-        int[] diff = new int[maxIndex + 1];
+    //pre-fix sum //trip[] = {capacity, start, end}
+    private static boolean prefixSum(int[] arr, int[][] trips, int maxCapacity){
+        int[] diff = new int[arr.length + 1];
         for(int[] trip : trips){
             diff[trip[1]] += trip[0];
-            diff[trip[2]] -= trip[0];
+            diff[trip[2]] += trip[0];
         }
         int curr = 0;
-        for(int passengers : diff){
-            if (curr > capacity) return false;
+        for(int passenger : diff){
+            if(curr > maxCapacity) return false;
         }
-
         return true;
     }
 
