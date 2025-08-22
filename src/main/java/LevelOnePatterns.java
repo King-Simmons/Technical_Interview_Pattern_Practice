@@ -20,7 +20,7 @@ public class LevelOnePatterns {
                 - Topological Sort\s
                 - Two Pointers Opposite + Same\s
                 - Prefix Sum\s
-                - Sliding Window\s
+                - Sliding Window Fixed + Longest + Shortest\s
                 - Sorting with Tie Breaker\s
                 - Priority Queue
                 - HashMap/Set/Max Priority Queue\s
@@ -176,20 +176,6 @@ public class LevelOnePatterns {
         }
         return true;
     }
-
-
-    /*
-    private static W slidingWindowFixed(List<T> input, int windowSize) {
-    W ans = window = input.subList(0, windowSize);
-    for (int right = windowSize; right < input.size(); ++right) {
-        int left = right - windowSize;
-        remove input.get(left) from window
-        append input.get(right) to window
-        ans = optimal(ans, window);
-    }
-    return ans;
-
-    */
 
     //sliding window fixed, longest, shortest
     private static List<Integer> slidingWindow(List<Integer> input, int windowSize, int target){
