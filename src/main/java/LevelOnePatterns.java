@@ -178,57 +178,59 @@ public class LevelOnePatterns {
     }
 
     //sliding window fixed, longest, shortest
-    private static List<Integer> slidingWindow(List<Integer> input, int windowSize, int target){
+    private static List<Integer> slidingWindowAll(List<Integer> input, int windowSize, int target){
         List<Integer> ans = new ArrayList<>();
-        int sum = 0;
-        int left = 0;
 
         //fixed
+        int sum = 0;
+        int left = 0;
         List<Integer> window = input.subList(0, windowSize);
-        for(int i : window){
-            sum += i;
-        }
-        for(int right = windowSize; right < input.size(); right++){
+        for(int i : window) sum += i;
+        if(sum == target) return window;
+
+        for(int right = windowSize + 1; right < input.size(); right++){
             left = right - windowSize;
             window.add(input.get(right));
-            sum += input.get(right);
             window.remove(0);
+            sum += input.get(right);
             sum -= input.get(left);
-            if(sum == target){
-                return window;
-            }
+            if(sum == target) return window;
         }
 
         //longest
-        window = new ArrayList<>();
-        int maxSize = 0;
         sum = 0;
         left = 0;
+        window = new ArrayList<>();
+        int maxSize = 0;
+
         for(int right = 0; right < input.size(); right++){
             window.add(input.get(right));
             sum += input.get(right);
-            while(sum > target){
+
+            while(sum > target && left <= right){
                 window.remove(0);
-                sum-=input.get(left);
+                sum -= input.get(left);
                 left++;
             }
-            if(window.size() > maxSize){
+
+            if(maxSize < window.size()){
                 maxSize = window.size();
                 ans = window;
             }
         }
 
         //shortest
-        window = new ArrayList<>();
         sum = 0;
         left = 0;
+        window = new ArrayList<>();
         int minSize = Integer.MAX_VALUE;
 
         for(int right = 0; right < input.size(); right++){
             window.add(input.get(right));
             sum += input.get(right);
-            while(sum < target){
-                if(window.size() < minSize){
+
+            while(sum >= target && left <= right){
+                if(minSize > window.size()){
                     minSize = window.size();
                     ans = window;
                 }
@@ -242,9 +244,9 @@ public class LevelOnePatterns {
     }
 
     //sorting with TieBreaker
-    private static void sortingWithTieBreaker(int[][] arr){
+    private static void sortWithTieBreaker(int[][] arr){
         Arrays.sort(arr, (a,b) -> {
-            int cmp = Integer.compare(a[0],b[0]);
+            int cmp = Integer.compare(a[0], b[0]);
             if(cmp != 0) return cmp;
             return Integer.compare(a[1], b[1]);
         });
@@ -254,10 +256,10 @@ public class LevelOnePatterns {
     private static void pq(int time, int value){
         PriorityQueue<int[]> pq = new PriorityQueue<>((a,b) -> a[0] - b[0]);
         pq.add(new int[]{time, value});
-    };
+    }
 
     //HashMap/Set/Max Priority Queue
-    private static void mapSetMaxQueue(){
+    private static void mapSetMaxPQ(){
         HashMap<String, HashSet<String>> graph = new HashMap<>();
         graph.computeIfAbsent("A", k -> new HashSet<>()).add("B");
 
