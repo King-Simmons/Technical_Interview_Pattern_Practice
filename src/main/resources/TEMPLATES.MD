@@ -118,7 +118,7 @@
             if( i != 0) return null;
         }
         return ans;
-    }
+    } 
 
     //two pointers same + opposite
     private static void twoPointersBoth(int[] arr){
