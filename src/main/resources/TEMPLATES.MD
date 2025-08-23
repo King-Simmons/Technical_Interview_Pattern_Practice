@@ -88,20 +88,36 @@
     }
 
      //topoSort
-    List<Integer> topoSort(int n, List<int[]> edges) {
-        List<List<Integer>> graph = new ArrayList<>();
-        int[] indeg = new int[n];
-        for (int i = 0; i < n; i++) graph.add(new ArrayList<>());
-        for (int[] e : edges) { graph.get(e[0]).add(e[1]); indeg[e[1]]++; }
-        Deque<Integer> q = new ArrayDeque<>();
-        for (int i = 0; i < n; i++) if (indeg[i] == 0) q.add(i);
-        List<Integer> res = new ArrayList<>();
-        while (!q.isEmpty()) {
-            int cur = q.poll();
-            res.add(cur);
-            for (int nei : graph.get(cur)) if (--indeg[nei] == 0) q.add(nei);
+        private static List<Character> topoSort(Map<Character, List<Character>> graph){
+        List<Character> ans = new ArrayList<>();
+        PriorityQueue<Character> pq = new PriorityQueue<>();
+        Map<Character, Integer> indegree = new HashMap<>();
+        for(Character c : graph.keySet()){ //insert all nodes
+            indegree.put(c, 0);
         }
-        return res;
+        for(Map.Entry<Character, List<Character>> entry: graph.entrySet()){ //add dependencies
+            for(Character c: entry.getValue()){
+                indegree.put(c, indegree.get(c) + 1);
+            }
+        }
+        for(Map.Entry<Character, Integer> entry : indegree.entrySet()){ //find nodes with no dependencies
+            if(entry.getValue() == 0){
+                pq.add(entry.getKey());
+            }
+        }
+        while(!pq.isEmpty()){
+            char curr = pq.poll();
+            ans.add(curr);
+            for(Character neighbor: graph.get(curr)){
+                indegree.put(neighbor, indegree.get(neighbor) - 1);
+                if(indegree.get(neighbor) == 0) pq.add(neighbor);
+            }
+        }
+
+        for(int i : indegree.values()){
+            if( i != 0) return null;
+        }
+        return ans;
     }
 
     //two pointers same + opposite
