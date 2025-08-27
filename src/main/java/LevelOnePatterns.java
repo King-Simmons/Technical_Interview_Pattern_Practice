@@ -38,10 +38,10 @@ public class LevelOnePatterns {
 
     //BFS directional
    private static void bfs(int sr, int sc, int[][] grid, int target){
-        int[][] dirs = {{0,1}, {1,0}, {-1, 0}, {0, -1}};
-        ArrayDeque<int[]> q = new ArrayDeque<>();
         int m = grid.length, n = grid[0].length;
+        Deque<int[]> q = new ArrayDeque<>();
         boolean[][] visited = new boolean[m][n];
+        int[][] dirs = {{0,1}, {1,0}, {-1, 0}, {0,-1}};
 
         q.add(new int[]{sr, sc});
         visited[sr][sc] = true;
@@ -49,21 +49,22 @@ public class LevelOnePatterns {
         while(!q.isEmpty()){
             int[] curr = q.poll();
             int r = curr[0], c = curr[1];
+
             for(int[] d : dirs){
-                int nr = r + d[0], nc = c + d[1];
-                if(nr >= 0 && nc >= 0 && nr < m && nc < n && !visited[nr][nc] && grid[nr][nc] == target){
-                    q.add(new int[]{nr, nc});
-                    visited[nr][nc] = true;
+                int newR = r + d[0], newC = c + d[1];
+                if(newR >= 0 && newC >= 0 &&  newR < m && newC < n && !visited[newR][newC] && grid[newR][newC] == target){
+                    q.add(new int[]{newR, newC});
+                    visited[newR][newC] = true;
                 }
             }
         }
    }
 
     //BFS multiSoure directional + levels
-    private static int bfs(int sr, int sc, int target, int start, int[][] grid){
-        int[][] dirs = {{0,1}, {1,0}, {-1,0}, {0, -1}};
+    private static int bfs(int target, int start, int[][] grid){
         int m = grid.length, n = grid[0].length;
-        ArrayDeque<int[]> q = new ArrayDeque<>();
+        Deque<int[]> q = new ArrayDeque<>();
+        int[][] dirs = {{0,1}, {-1,0}, {1, 0}, {0, -1}};
         boolean[][] visited = new boolean[m][n];
         int levels = 0;
 
@@ -128,61 +129,62 @@ public class LevelOnePatterns {
     //topoSort
     private static List<Character> topoSort(Map<Character, List<Character>> graph){
         List<Character> ans = new ArrayList<>();
-        PriorityQueue<Character> pq = new PriorityQueue<>();
         Map<Character, Integer> indegree = new HashMap<>();
-        for(Character c : graph.keySet()){ //insert all nodes
+        for(Character c : graph.keySet()){
             indegree.put(c, 0);
         }
-        for(Map.Entry<Character, List<Character>> entry: graph.entrySet()){ //add dependencies
-            for(Character c: entry.getValue()){
+        for(Map.Entry<Character, List<Character>> entry: graph.entrySet()){
+            for(Character c : entry.getValue()){
                 indegree.put(c, indegree.get(c) + 1);
             }
         }
-        for(Map.Entry<Character, Integer> entry : indegree.entrySet()){ //find nodes with no dependencies
-            if(entry.getValue() == 0){
-                pq.add(entry.getKey());
-            }
+        PriorityQueue<Character> pq = new PriorityQueue<>();
+
+        for(Map.Entry<Character, Integer> entry: indegree.entrySet()){
+            if(entry.getValue() == 0) pq.add(entry.getKey());
         }
         while(!pq.isEmpty()){
             char curr = pq.poll();
             ans.add(curr);
-            for(Character neighbor: graph.get(curr)){
-                indegree.put(neighbor, indegree.get(neighbor) - 1);
-                if(indegree.get(neighbor) == 0) pq.add(neighbor);
+            for(Character c : graph.get(curr)){
+                indegree.put(c, indegree.get(c) - 1);
+                if(indegree.get(c) == 0) pq.add(c);
             }
         }
-
         for(int i : indegree.values()){
-            if( i != 0) return null;
+            if(i != 0) return null;
         }
+
         return ans;
     }
 
 
     //two pointers same + opposite
     private static void twoPointersBoth(int[] arr){
-        int l = 0, r = arr.length -1;
-        while(l < r){
+        int l = 0, r = arr.length - 1;
+        //opposite
+        while( l < r){
             //process
-            if(arr[l] == arr[r]){ //condition
+            if(arr[l] == arr[r]){
                 l++;
             }else r--;
         }
+        //same
         int slow = 0, fast = 0;
-        while(fast < arr.length){
-            //process
-            if(arr[slow] != arr[fast]){ //condition
-                slow++;
-                arr[slow] = arr[fast];
-            }
-            fast++;
-        }
+         while(fast < arr.length){
+             //process
+             if(arr[slow] != arr[fast]){
+                 slow++;
+                 arr[slow] = arr[fast];
+             }
+             fast++;
+         }
     }
 
 
     //pre-fix sum //trip[] = {capacity, start, end}
-    private static boolean prefixSum(int[] arr, int[][] trips, int maxCapacity){
-        int[] diff = new int[arr.length + 1];
+    private static boolean prefixSum(int[][] trips, int maxCapacity){
+        int[] diff = new int[trips.length + 1];
         for(int[] trip : trips){
             diff[trip[1]] += trip[0];
             diff[trip[2]] += trip[0];
