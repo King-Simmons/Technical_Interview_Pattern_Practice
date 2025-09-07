@@ -37,24 +37,26 @@ public class LevelOnePatterns {
     }
 
     //BFS directional
-   private static void bfs(int sr, int sc, int[][] grid, int target){
+    // starting from point {0,0}, search the grid and find all adjacent occurances of target and change it to 0
+    private static void bfs(int[][] grid, int target) {
         int m = grid.length, n = grid[0].length;
         Deque<int[]> q = new ArrayDeque<>();
         boolean[][] visited = new boolean[m][n];
-        int[][] dirs = {{0,1}, {1,0}, {-1, 0}, {0,-1}};
+        int[][] dirs = {{0,1},{1,0},{-1,0},{0,-1}};
 
-        q.add(new int[]{sr, sc});
-        visited[sr][sc] = true;
+        q.add(new int[]{0,0});
+        visited[0][0] = true;
+        if(grid[0][0] == target) grid[0][0] = 0;
 
         while(!q.isEmpty()){
             int[] curr = q.poll();
             int r = curr[0], c = curr[1];
-
             for(int[] d : dirs){
-                int newR = r + d[0], newC = c + d[1];
-                if(newR >= 0 && newC >= 0 &&  newR < m && newC < n && !visited[newR][newC] && grid[newR][newC] == target){
-                    q.add(new int[]{newR, newC});
-                    visited[newR][newC] = true;
+                int nr = r + d[0], nc = c + d[1];
+                if(nr >= 0 && nc >= 0 && nr < m  && nc < n && !visited[m][n] && grid[m][n] == target){
+                    q.add(new int[]{nr, nc});
+                    visited[nr][nc] = true;
+                    grid[nr][nc] = 0;
                 }
             }
         }
@@ -146,9 +148,9 @@ public class LevelOnePatterns {
         while(!pq.isEmpty()){
             char curr = pq.poll();
             ans.add(curr);
-            for(Character c : graph.get(curr)){
-                indegree.put(c, indegree.get(c) - 1);
-                if(indegree.get(c) == 0) pq.add(c);
+            for(Character neighbor: graph.get(curr)){
+                indegree.put(neighbor, indegree.get(neighbor) - 1);
+                if(indegree.get(neighbor) == 0) pq.add(neighbor);
             }
         }
         for(int i : indegree.values()){
