@@ -312,4 +312,22 @@
         return dp[n-1][m-1];
     }
 
+    //prefix sum range query
+    private static List<Integer> prefixSumRangeQuery(int[] arr, int target){
+        if(arr.length == 0) return List.of();
+        Map<Integer, Integer> indexMap = new HashMap<>();
+        int currSum = 0;
+        indexMap.put(0, 0);
+        for(int i = 0; i < arr.length; i++){
+            currSum += arr[i];
+            int diff = currSum - target;
+            if(indexMap.containsKey(diff)){
+                return List.of(indexMap.get(diff), i + 1);
+            }else{
+                indexMap.put(currSum, i + 1);
+            }
+        }
+        return List.of();
+    }
+
 }
