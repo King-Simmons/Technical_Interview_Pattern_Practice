@@ -12,6 +12,7 @@ public class LevelTwoPatterns {
         System.out.println("Compiled!!!");
     }
 
+    //prefix sum range query
     private static List<Integer> prefixSumRangeQuery(int[] arr, int target){
         if(arr.length == 0) return List.of();
         Map<Integer, Integer> indexMap = new HashMap<>();
