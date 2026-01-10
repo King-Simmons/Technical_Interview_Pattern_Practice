@@ -29,4 +29,51 @@ public class LevelTwoPatterns {
         }
         return List.of();
     }
+
+    //ListNode
+    public class ListNode {
+        int val;
+        ListNode next;
+        ListNode(){
+
+        }
+        ListNode(int val){
+            this.val = val;
+        }
+        ListNode(int val, ListNode next){
+            this.val = val;
+            this.next = next;
+        }
+    }
+
+    //Linked List Traversals
+    private static void LinkedListTraversals(ListNode head){
+        //Lead-Lag
+        ListNode lag = head;
+        ListNode lead = head.next.next;
+        while(lead != null){
+            lead = lead.next;
+            lag = lag.next;
+        }
+
+        //Fast-Slow
+        ListNode fast = head;
+        ListNode slow = head;
+        while(fast != null && fast.next != null){
+            fast = fast.next.next;
+            slow = slow.next;
+        }
+
+        //Reversal
+        ListNode prev = null;
+        ListNode curr = head;
+        ListNode next = head;
+
+        while(curr != null){
+            next = next.next;
+            curr.next = prev;
+            prev = curr;
+            curr = next;
+        }
+    }
 }
