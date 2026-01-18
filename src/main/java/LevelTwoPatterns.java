@@ -1,4 +1,5 @@
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class LevelTwoPatterns {
     public static void main(String[] args) {
@@ -7,8 +8,10 @@ public class LevelTwoPatterns {
             - Prefix Sum Range Query\s
             - LinkedList Traversals\s
             - TreeSet/TreeMap\s
+            - ArrayToList\s
             - DP-Warmup \s
             - DP-ConstantTransition\s
+            - DP-Grid\s
             """);
 
         System.out.println("Compiled!!!");
@@ -108,6 +111,16 @@ public class LevelTwoPatterns {
         return min == Integer.MAX_VALUE ? -1 : min;
     }
 
+
+    //arraysToList
+    private static void arrayToList(){
+        int[] arr = new int[1];
+        List<Integer> list = Arrays.stream(arr).boxed().toList();
+        arr = list.stream().mapToInt(Integer::intValue).toArray();
+        System.out.println(Arrays.toString(arr));
+    }
+
+
     //dp-warmup
     private static int dpWarmUp(int n){
         //0, 1, 1, 2, 4, 7...
@@ -148,6 +161,23 @@ public class LevelTwoPatterns {
         }
         return prev1;
     }
+
+    //dpGrid
+    public static int dpGrid(int m, int n) {
+        // Optimized to O(n) since only using previous row
+        // dp[m][n] = dp[m - 1][n] + dp[m][n-1] -> dp[n] = dp[n-1] + dp[n]
+        // dp[n] is previous after each loop
+        int[] dp = new int[n];
+        Arrays.fill(dp, 1);
+        for(int i = 1; i < m; i++){
+            for(int j = 1; j < n; j++){
+                dp[j] = dp[j-1] + dp[j];
+            }
+        }
+        return dp[n-1];
+    }
+
+
 
 
 }
