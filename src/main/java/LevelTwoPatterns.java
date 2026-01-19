@@ -1,5 +1,4 @@
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class LevelTwoPatterns {
     public static void main(String[] args) {
@@ -12,6 +11,14 @@ public class LevelTwoPatterns {
             - DP-Warmup \s
             - DP-ConstantTransition\s
             - DP-Grid\s
+            - DP-DualSequences\s
+            - DP-NonConstantTransition\s
+            - DP-Knapsack-Weight\s
+            - DP-Knapsack-WeightAndValue\s
+            - DP-Interval\s
+            - DP-TopSort\s
+            - DP-Trees\s
+            - DP-Bitmask\s
             """);
 
         System.out.println("Compiled!!!");
@@ -223,6 +230,29 @@ public class LevelTwoPatterns {
         return prev[n];
     }
 
+    //dpNonConstantTransition
+    private static int dpNonConstantTransition(List<Integer> nums){
+        int m = nums.size();
+        if(m == 0) return 0;
+        int[] dp = new int[m];
+        int max = 0;
+        int longest = 0;
+
+        for(int i = 0; i < m; i++){
+            dp[i] = 1; //Every element is an LIS of 1
+            //get longest at each index, only check where nums is less than curr
+            //nlog(n) by using binary search where dp[i] = lowest number at length i
+            for(int j = 0; j < i; j++){
+                if(nums.get(j) < nums.get(i)){
+                    max = Math.max(max, dp[j]);
+                }
+            }
+            dp[i] = max + 1;
+            longest = Math.max(dp[i], longest);
+            max = 0;
+        }
+        return longest;
+    }
 
 
 
