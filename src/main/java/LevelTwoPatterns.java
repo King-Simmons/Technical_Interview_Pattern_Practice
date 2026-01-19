@@ -164,7 +164,7 @@ public class LevelTwoPatterns {
 
     //dpGrid
     public static int dpGrid(int m, int n) {
-        // Optimized to O(n) since only using previous row
+        // Optimized to O(n) since only using the previous row
         // dp[m][n] = dp[m - 1][n] + dp[m][n-1] -> dp[n] = dp[n-1] + dp[n]
         // dp[n] is previous after each loop
         int[] dp = new int[n];
@@ -175,6 +175,52 @@ public class LevelTwoPatterns {
             }
         }
         return dp[n-1];
+    }
+
+    //dpDualSequences
+    private static int dpDualSequences(String a, String b){
+        //save space by having the column (n) be the smaller string
+        if(a.length() < b.length()){
+            String temp = a;
+            a = b;
+            b = temp;
+        }
+
+        int m = a.length();
+        int n = b.length();
+        if(m == 0 || n == 0){
+            return 0;
+        }
+
+        //save space using 2 arrays instead of 2D array
+        //possible because we only look back 1 row
+        int[] prev = new int[n + 1];
+        int[] curr = new int[n + 1];
+
+        for(int i = 0; i <= m; i++){
+            for(int j = 0; j <= n; j++){
+                //base: empty string
+                if(i == 0 || j == 0){
+                    curr[j] = 0;
+                }else{
+                    //same
+                    if(a.charAt(i-1) == b.charAt(j-1)){
+                        curr[j] = prev[j-1] + 1;
+                    }else{
+                        //different
+                        int useStr1= prev[j];
+                        int useStr2 = curr[j-1];
+                        curr[j] = Math.max(useStr1, useStr2);
+                    }
+                }
+            }
+            //make sure to swap instead of copying for O(1) time
+            //make sure outside of the inner loop
+            int[] temp = prev;
+            prev = curr;
+            curr = temp;
+        }
+        return prev[n];
     }
 
 
