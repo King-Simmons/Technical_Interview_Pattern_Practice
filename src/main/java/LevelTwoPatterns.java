@@ -240,7 +240,7 @@ public class LevelTwoPatterns {
 
         for(int i = 0; i < m; i++){
             dp[i] = 1; //Every element is an LIS of 1
-            //get longest at each index, only check where nums is less than curr
+            //get the longest at each index, only check where nums is less than curr
             //nlog(n) by using binary search where dp[i] = lowest number at length i
             for(int j = 0; j < i; j++){
                 if(nums.get(j) < nums.get(i)){
@@ -252,6 +252,33 @@ public class LevelTwoPatterns {
             max = 0;
         }
         return longest;
+    }
+
+    //Knapsack-Weight
+    private static boolean knapsackWeight(List<Integer> nums){
+        int totalSum = 0;
+        int n = nums.size();
+        for(int i : nums){
+            totalSum += i;
+        }
+        int target = totalSum / 2;
+        if(totalSum % 2 != 0){
+            return false;
+        }
+        boolean[][] dp = new boolean[n + 1][target + 1];
+        dp[0][0] = true;
+
+        for(int i = 1; i <= n; i++){
+            for(int sum = 0; sum <= target; sum++){
+                //don't take nums[i-1]
+                dp[i][sum] = dp[i - 1][sum];
+                // take nums[i-1]
+                if(sum - nums.get(i-1) >= 0){
+                    dp[i][sum] = dp[i][sum] || dp[i-1][sum-nums.get(i-1)];
+                }
+            }
+        }
+        return dp[n][target];
     }
 
 
