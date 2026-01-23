@@ -285,11 +285,9 @@ public class LevelTwoPatterns {
     private static int knapsackWeightAndValue(List<Integer> weights, List<Integer> values, int maxWeight){
         int n = weights.size();
         int[][] dp = new int[n+1][maxWeight+1];
-        dp[0][0] = 0;
 
-        //Can only use 1 of each item, decrement to avoid missing items
         for(int i = 1; i <= n; i++){
-            for(int j = maxWeight; j >= 0; j--){
+            for(int j = 0; j <= maxWeight; j++){
                 dp[i][j] = dp[i - 1][j];
                 if(j - weights.get(i - 1) >= 0){
                     dp[i][j] = Math.max(dp[i][j], dp[i - 1][j-weights.get(i - 1)] + values.get(i - 1));
