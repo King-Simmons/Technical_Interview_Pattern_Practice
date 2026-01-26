@@ -15,6 +15,7 @@ public class LevelTwoPatterns {
             - DP-NonConstantTransition\s
             - DP-Knapsack-Weight\s
             - DP-Knapsack-WeightAndValue\s
+            - DP-Bounded-Chunked-Knapsack\s
             - DP-Interval\s
             - DP-TopSort\s
             - DP-Trees\s
@@ -295,6 +296,46 @@ public class LevelTwoPatterns {
             }
         }
         return dp[n][maxWeight];
+    }
+
+    //Bounded-Knapsack
+    private static int boundedKnapsack(List<Integer> weights, List<Integer> values, List<Integer> quantities, int capacity){
+         int n = weights.size();
+         int[] dp = new int[capacity + 1];
+         List<Integer> chunkWeights = new ArrayList<>();
+         List<Integer> chunkValues = new ArrayList<>();
+         //binary decomposition reduces the complexity of checking each item quantity from n to log(n)
+        for(int i = 0; i  < n; i++){
+            int w = weights.get(i);
+            int v = values.get(i);
+            int q = quantities.get(i);
+            int k = 1;
+            //we only need chunks up to the quantity
+            while( k <= q){
+                chunkWeights.add(w * k);
+                chunkValues.add(v * k);
+                //reduce quantity before increasing k
+                q -= k;
+                k *= 2;
+            }
+            //check for the remainder
+            if(q > 0){
+                chunkWeights.add(w * q);
+                chunkValues.add(v * q);
+            }
+        }
+        // 0/1 knapsack DP
+        for(int i = 0; i < chunkWeights.size(); i++){
+            int w = chunkWeights.get(i);
+            int v = chunkValues.get(i);
+            //reverse order since using one row and items are used once
+            //avoids overwriting
+            //j >= w to avoid the negative index
+            for(int j = capacity; j >= w; j--){
+                dp[j] = Math.max(dp[j], dp[j-w] + v);
+            }
+        }
+        return dp[capacity];
     }
 
 
